@@ -1,0 +1,38 @@
+## Interface: 30300
+## Title:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Karazhan - Frostmourne|r
+## Title-koKR:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0카라잔|r
+## Title-zhCN:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0卡拉赞|r
+## Title-zhTW:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0卡拉贊|r
+## Title-ruRU:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Каражан|r
+## LoadOnDemand: 1
+## RequiredDeps: DBM-Core
+## SavedVariables: DBMKarazhanFrostmourne_AllSavedVars
+## SavedVariablesPerCharacter: DBMKarazhanFrostmourne_SavedStats
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: WOTLK
+## X-DBM-StatTypes: normal,normal25,heroic,heroic25
+## X-DBM-Mod-MapID: 800
+## X-DBM-Mod-Sort: 1007
+## X-DBM-Mod-Name: Karazhan Frostmourne
+## X-DBM-Mod-Name-zhCN: 卡拉赞
+## X-DBM-Mod-Name-ruRU: Каражан
+## X-DBM-Mod-LoadZone: Karazhan
+## X-DBM-Mod-LoadZone-zhTW: 卡拉贊
+## X-DBM-Mod-LoadZone-zhCN: 卡拉赞
+## X-DBM-Mod-LoadZone-deDE: Karazhan
+## X-DBM-Mod-LoadZone-esES: Karazhan
+## X-DBM-Mod-LoadZone-esMX: Karazhan
+## X-DBM-Mod-LoadZone-frFR: Karazhan
+## X-DBM-Mod-LoadZone-koKR: 카라잔
+## X-DBM-Mod-LoadZone-ruRU: Каражан
+
+localization.en.lua
+
+BehaviorEngine.lua
+Utility.lua
+MaidenOfRot.lua
+TheCuratedOne.lua
+Scythewing.lua
+ShadeOfAran.lua
+ArchMageAntonidas.lua
