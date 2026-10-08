@@ -14,7 +14,7 @@ mod:RegisterEvents(
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 60936 57407 9250865",
-	"SPELL_CAST_START 56505 9250852",
+	"SPELL_CAST_START 56505 9250851 9250852",
 	"SPELL_CAST_SUCCESS 57430",
 	"CHAT_MSG_RAID_BOSS_EMOTE"
 )
@@ -129,7 +129,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnBreath:Play("findshield")
 		timerBreath:Start()
 		timerBreathCD:Start()
-	elseif args.spellId == 9250852 then -- Arcane Breath (Frostmourne custom, phase 1)
+	elseif args:IsSpellID(9250851, 9250852) then -- Arcane Breath (Frostmourne custom, phase 1)
 		timerArcaneBreathCD:Start()
 	end
 end
@@ -186,7 +186,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg,sourceName)
 		end
 		if feedbackTarget == UnitName("player") then
 			specWarnFeedbackYou:Show()
-			specWarnFeedbackYou:Play("bombrun")
+			specWarnFeedbackYou:Play("targetyou")
 			yellFeedback:Yell()
 			if self.Options.RangeFrame then
 				DBM.RangeCheck:Show(12)

@@ -10,6 +10,7 @@ mod:RegisterCombat("combat_yell", L.Yell)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 28089",
+	"SPELL_CAST_SUCCESS 9250651",	
 	"CHAT_MSG_MONSTER_YELL",
 	"UNIT_AURA player",
 	"UNIT_DIED"
@@ -28,6 +29,7 @@ local enrageTimer			= mod:NewBerserkTimer(365)
 local timerNextShift		= mod:NewNextTimer(20, 28089, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerShiftCast		= mod:NewCastTimer(3, 28089, nil, nil, nil, 2)
 local timerThrow			= mod:NewNextTimer(28, 28338, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerChainLightningCD	= mod:NewCDTimer(15, 9250651, nil, nil, nil, 3) -- Frostmourne custom, log 2026-10-06: every 15.0-15.1 in phase 2 (one 24s gap during Tesla Overload)
 local timerResetMiniBoss	= mod:NewTimer(5, "Mini boss resets", 20608)
 
 if not DBM.Options.GroupOptionsBySpell then
@@ -118,8 +120,19 @@ do
 	end
 end
 
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 9250651 then -- Chain Lightning (Frostmourne custom)
+		timerChainLightningCD:Start()
+	end
+end
+
 function mod:CHAT_MSG_MONSTER_YELL(msg, npc)
-	if L.Name and self.vb.phase ~= 2 then		
+	if msg and msg:find("Maximum power", 1, true) then
+		-- Frostmourne logs 2026-10-06 (two pulls): after this yell Thaddius heals to full and never casts Polarity Shift again
+		self.vb.noShift = true
+		timerNextShift:Stop()
+		warnShiftSoon:Cancel()
+	elseif npc == L.name and self.vb.phase ~= 2 then
 		self:SendSync("P2")
 	end
 end
@@ -144,6 +157,10 @@ function mod:OnSync(msg)
 		DBM.BossHealth:Hide()
 		enrageTimer:Start()
 		self:SetStage(2)
+		-- Frostmourne logs 2026-10-06 (two pulls): first Chain Lightning 14s and first Polarity Shift 15s after Thaddius' first yell
+		timerChainLightningCD:Start(14)
+		timerNextShift:Start(15)
+		warnShiftSoon:Schedule(10)		
 	end
 end
 

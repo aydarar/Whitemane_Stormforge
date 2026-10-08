@@ -6,10 +6,15 @@ mod.statTypes = "normal,heroic,mythic"
 mod:SetRevision("20250929220131")
 mod:SetCreatureID(26731)
 mod:SetEncounterID(520)
+mod:SetUsedIcons(8)
+
+mod:AddSetIconOption("PrioAddIcons", 47731, true, 5, {8})
+mod.vb.PrioAddIcon = 8
 
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
+	"SPELL_CAST_START 47731 47736",
 	"UNIT_HEALTH",
 	"CHAT_MSG_MONSTER_YELL"
 )
@@ -22,6 +27,7 @@ mod.vb.warnedSplit1		= false
 mod.vb.warnedSplit2		= false
 
 function mod:OnCombatStart()
+	mod.vb.PrioAddIcon = 8
 	self.vb.warnedSplit1 = false
 	self.vb.warnedSplit2 = false
 end
@@ -41,5 +47,11 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		warningSplitNow:Show()
 	elseif msg == L.MergeTrigger then
 		warningMerge:Show()
+	end
+end
+
+function mod:SPELL_CAST_START(args)
+	if args:IsSpellID(47731, 47736) then
+		self:ScanForMobs(args.sourceGUID, 2, self.vb.PrioAddIcon, 1, nil, 12, "PrioAddIcons")				
 	end
 end

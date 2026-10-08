@@ -6,7 +6,7 @@ mod.statTypes = "normal,normal25"
 mod:SetRevision("20250929220131")
 mod:SetCreatureID(28860)
 mod:SetEncounterID(742)
-mod:SetUsedIcons(1, 2, 3, 4)
+mod:SetUsedIcons(8)
 
 mod:RegisterCombat("yell", L.YellSarthPull)
 
@@ -14,6 +14,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 56908 58956 9250871 9250872",
 	"SPELL_CAST_SUCCESS 57579 59127",
 	"SPELL_AURA_APPLIED 57491 9250867 9250868",
+	"SPELL_AURA_REMOVED 9250867 9250868",	
 	"SPELL_DAMAGE 59128",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"CHAT_MSG_MONSTER_EMOTE",
@@ -53,8 +54,8 @@ mod:AddBoolOption("AnnounceFails", true, "announce")
 
 mod:GroupSpells(59127, 59128)--Shadow fissure with void blast
 
-mod:AddSetIconOption("TwiglightBlackoutIcons", 9250867, true, 5, {1, 2, 3, 4})
-mod.vb.TwiglightBlackoutIcon = 1
+mod:AddSetIconOption("TwiglightBlackoutIcons", 9250867, true, 5, {8})
+mod.vb.TwiglightBlackoutIcon = 8
 
 local specWarnTwighlightBlackout = mod:NewAnnounce("Stack up on marked player and heal up after! DO NOT dispell or heal marked player until group stacked up on him!", 2)
 local vesperonPortalEmote = "You pose no threat, lesser beings! Give me your worst!"
@@ -124,7 +125,7 @@ function mod:OnCombatStart(delay)
 
 	twipe(lastvoids)
 	twipe(lastfire)
-	self.vb.TwiglightBlackoutIcon = 1 
+	self.vb.TwiglightBlackoutIcon = 8 
 end
 
 function mod:OnCombatEnd()
@@ -186,13 +187,21 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.TwiglightBlackoutIcons then
 			self:SetIcon(args.destName, self.vb.TwiglightBlackoutIcon)
 		end
-		self.vb.TwiglightBlackoutIcon = self.vb.TwiglightBlackoutIcon + 1
 		specWarnTwighlightBlackout:Show()
 		specWarnTwighlightBlackout:Play("helpsoak")
 		if args:IsPlayer() then			
 			yellTwighlightBlackout:Yell()
 		end
 	end	
+end
+
+function mod:SPELL_AURA_REMOVED(args)
+	if args:IsSpellID(9250867,9250868) then -- Twilight Blackout ended (dispelled or expired)
+		timerBlackout:Stop(args.destName)
+		if self.Options.SetIconOnBlackout then
+			self:SetIcon(args.destName, 0)
+		end
+	end
 end
 
 function mod:SPELL_DAMAGE(_, _, _, _, destName, _, spellId)

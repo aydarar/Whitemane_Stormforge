@@ -15,8 +15,8 @@ mod:SetModelScale(0.1)
 
 mod:RegisterEventsInCombat(
 --	"SPELL_CAST_START 28524",
-	"SPELL_CAST_SUCCESS 28542 55665 28560 55696 55697 9250713 9250674 9250675", --9250711 9250712
-	"SPELL_AURA_APPLIED 28522 28547 55699 45185",
+	"SPELL_CAST_SUCCESS 28542 55665 28560 55696 55697 9250668 9250669 9250713 9250674 9250675", --9250711 9250712
+	"SPELL_AURA_APPLIED 28522 28547 55699 45185 9250676 9250677",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"UNIT_HEALTH_UNFILTERED" -- have to do unfiltered because Zidras doesn't feel like fixing his stuff
 )
@@ -141,7 +141,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if args:IsPlayer() then
 			yellIceBlock:Yell()
 		end
-	elseif args:IsSpellID(28547, 55699) and args:IsPlayer() and self:AntiSpam(1) then
+	elseif args:IsSpellID(28547, 55699, 9250676, 9250677) and args:IsPlayer() and self:AntiSpam(1) then
 		specWarnBlizzard:Show(args.spellName)
 		specWarnBlizzard:Play("watchfeet")
 	end
@@ -149,7 +149,7 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if args:IsSpellID(28542, 55665) then -- Life Drain
+	if args:IsSpellID(28542, 55665, 9250668, 9250669) then -- Life Drain
 		warnDrainLifeNow:Show()
 		warnDrainLifeSoon:Schedule(19)
 		timerDrainLife:Start()

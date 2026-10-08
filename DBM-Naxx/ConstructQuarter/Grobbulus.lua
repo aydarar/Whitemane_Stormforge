@@ -5,9 +5,8 @@ local ml = DBM:GetModLocalization("Grobbulus")
 ml:SetOptionLocalization({SpecWarnManySlimes="Show special warning when 3 or more Fallout Slimes are alive"})
 ml:SetWarningLocalization({SpecWarnManySlimes="|TInterface\\Icons\\spell_nature_abolishmagic:12:12|t %d Slimes! %s |TInterface\\Icons\\spell_nature_abolishmagic:12:12|t"})
 
-mod:SetRevision("20251118195633")
+mod:SetRevision("20221016191326")
 mod:SetCreatureID(15931)
-mod:SetEncounterID(1111)
 mod:SetUsedIcons(1, 2, 3, 4)
 
 mod:RegisterCombat("combat")
@@ -17,7 +16,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 28169",
 	"SPELL_SUMMON 28240",
 	"SPELL_DAMAGE 54363 28241",
-	"SPELL_CAST_SUCCESS 54367 28156",
+	"SPELL_CAST_SUCCESS 54367 28156 9250647 9250639",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"UNIT_DIED"
 )
@@ -131,7 +130,9 @@ function mod:SPELL_DAMAGE(_,_,_, destGUID, _,_,spellId)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args:IsSpellID(54367, 28156) then -- Fallout Slime casts Disease Cloud when it spawns
+	if args.spellId == 9250639 then -- Slime Spray (Frostmourne custom): trigger from the cast, the emote stays as fallback
+		self:SlimeSpray()
+	elseif args:IsSpellID(54367, 28156) or (args.spellId == 9250647 and args:GetSrcCreatureID() == 16290) then -- Fallout Slime casts Disease Cloud when it spawns (9250647: Frostmourne custom, also used by trash slimes)
 		slimesAlive = slimesAlive + 1
 		if slimesAlive >= 3 and self.Options.SpecWarnManySlimes and self:AntiSpam(1, "Slime")then
 			self:ScheduleMethod(0.2, "ManySlimes")
@@ -154,10 +155,21 @@ function mod:UNIT_DIED(args)
 	end
 end
 
-function mod:OnSync(msg)
-	if msg == "Spray" then
-		warnSlimeSprayNow:Show()
+function mod:SlimeSpray()
+	if not self:AntiSpam(5, "Spray") then return end -- cast and emote both report the same spray
+	warnSlimeSprayNow:Show()
+
+	if self:IsDifficulty("normal25") then
 		warnSlimeSpraySoon:Schedule(10)
 		timerSlimeSprayCD:Start(15)
+	else
+		warnSlimeSpraySoon:Schedule(15)
+		timerSlimeSprayCD:Start(20)
+	end
+end
+
+function mod:OnSync(msg)
+	if msg == "Spray" then
+		self:SlimeSpray()
 	end
 end

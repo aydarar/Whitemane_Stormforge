@@ -36,8 +36,10 @@ mod:AddBoolOption("SporeDamageAlert", false)
 mod.vb.doomCounter	= 0
 mod.vb.sporeTimer	= 15
 mod.vb.sporeCounter = 0
+local pullTime = 0
 
 function mod:OnCombatStart(delay)
+	pullTime = GetTime() - delay
 	self.vb.doomCounter = 0
 	self.vb.sporeCounter = 0
 	if self:IsDifficulty("normal25", "heroic25") then
@@ -77,8 +79,10 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if args:IsSpellID(29204, 55052,9250600, 9250601) then  -- Inevitable Doom
 		self.vb.doomCounter = self.vb.doomCounter + 1
 		warnDoomNow:Show(self.vb.doomCounter)
-		if self:IsDifficulty("normal25", "heroic25") then
-			timerDoom:Start(30, self.vb.doomCounter + 1)
+		if self:IsDifficulty("normal25") then
+			timerDoom:Start(20, self.vb.doomCounter + 1)
+		elseif GetTime() - pullTime > 295 then -- log: first at 120, every 30 until 300s, then every 15
+			timerDoom:Start(15, self.vb.doomCounter + 1)
 		else
 			timerDoom:Start(30, self.vb.doomCounter + 1)
 		end

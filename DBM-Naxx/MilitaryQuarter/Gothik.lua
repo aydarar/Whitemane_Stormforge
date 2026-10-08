@@ -122,13 +122,15 @@ function mod:OnCombatStart()
 		waves = wavesNormal
 	end
 	self.vb.wave = 0
+	-- Frostmourne raid reports as heroic25; logs 2026-10-06: Gothik's first cast at 181.9 in both pulls (was 270)
+	local p2 = self:IsDifficulty("heroic25","heroic10") and 180 or 270	
+	timerPhase2:Start(p2)
+	warnPhase2:Schedule(p2)
 	timerGate:Start()
-	timerPhase2:Start()
-	warnPhase2:Schedule(270)
 	timerWave:Start(25, self.vb.wave + 1)
 	warnWaveSoon:Schedule(22, self.vb.wave + 1, getWaveString(self.vb.wave + 1))
 	self:Schedule(25, NextWave, self)
-	self:Schedule(270, StartPhase2, self)
+	self:Schedule(p2, StartPhase2, self)
 	timerNextDebuff:Start()
 	self.vb.SoulConvergenceIcon = 1 
 end

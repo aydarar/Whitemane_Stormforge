@@ -10,7 +10,7 @@ mod:RegisterCombat("combat_yell", L.Pull)
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 28798 54100 28732 54097 28794 54099 9250586 9250587",
-	"SPELL_CAST_SUCCESS 28796 54098 9250584 9250585",
+	"SPELL_CAST_SUCCESS 28796 54098 9250584 9250585 28794 54099 9250586 9250587",
 	"UNIT_DIED"
 )
 
@@ -26,6 +26,7 @@ local specWarnGTFO			= mod:NewSpecialWarningGTFO(28794, nil, nil, nil, 1, 8)
 local timerEmbrace			= mod:NewBuffActiveTimer(30, 28732, nil, nil, nil, 6)
 local timerEnrage			= mod:NewCDTimer(60, 28131, nil, nil, nil, 6)
 local timerPoisonVolleyCD	= mod:NewCDTimer(14, 54098, nil, nil, nil, 5)
+local timerRainOfFireCD		= mod:NewNextTimer(12, 54099, nil, nil, nil, 3) -- Frostmourne custom, log 2026-10-06: every 12.0-12.1
 
 mod:AddTimerLine("RisenWorshipper")
 mod:AddSetIconOption("RisenWorshipperIcons", 9250687, true, 5, {8})
@@ -35,7 +36,8 @@ mod.vb.RisenWorshipperIcons = 8
 mod.vb.enraged = false
 
 function mod:OnCombatStart(delay)
-	timerEnrage:Start(-delay)
+	local firstEnrage = self:IsDifficulty("heroic25") and 74 or 60
+	timerEnrage:Start(firstEnrage - delay)	
 	warnEnrageSoon:Schedule(55 - delay)
 	timerPoisonVolleyCD:Start(12.6-delay) -- REVIEW! variance? (25man Lordaeron 2022/10/16) - 12.6
 	self.vb.RisenWorshipperIcons = 8
@@ -80,6 +82,8 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	if args:IsSpellID(28796, 54098,9250584,9250585) then -- Poison Bolt Volley
 		timerPoisonVolleyCD:Start()
+	elseif args:IsSpellID(28794, 54099,9250587,9250586) then -- Rain of Fire (Frostmourne custom)
+		timerRainOfFireCD:Start()
 	end
 end
 
@@ -94,7 +98,7 @@ function mod:UNIT_DIED(args)
 		DBM:Schedule(3.5,function()
 			self:ScanForMobs(900126, 2, self.vb.RisenWorshipperIcons, 1, nil, 5, "RisenWorshipperIcons")				
 			specWarnRisenWorshipper:Show()
-			specWarnRisenWorshipper:Play("targetchange")	
+			specWarnRisenWorshipper:Play("killmob")	
 		end
 				)	
 	end
