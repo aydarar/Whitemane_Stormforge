@@ -16,7 +16,7 @@ mod:RegisterCombat("combat_yell", L.Yell)
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 27808 27819 28410",
 	"SPELL_AURA_REMOVED 28410",
-	"SPELL_CAST_SUCCESS 27810 27819 27808 28410 9250680 9250681 9250717",
+	"SPELL_CAST_SUCCESS 27810 27819 27808 28410 9250680 9250681 9250716 9250717",
 	"SPELL_CAST_START 55802 9250678 9250679",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"CHAT_MSG_MONSTER_YELL",
@@ -364,7 +364,7 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 9250717 then -- Necrotic Surge, cast by the Phylactery: fallback if the yell was missed
+	if args:IsSpellID(9250716,9250717) then -- Necrotic Surge, cast by the Phylactery: fallback if the yell was missed
 		StartPhylactery(self)
 	elseif args:IsSpellID(9250680,9250681)  then -- Frostbolt volley (Frostmourne custom)
 		if not self.vb.phylactery then

@@ -23,14 +23,12 @@ local timerEnrage		= mod:NewBuffActiveTimer(8, 54427, nil, nil, nil, 5, nil, DBM
 local timerEnrageCD		= mod:NewCDTimer(30, 54427, nil, nil, nil, 5)
 local timerDecimate		= mod:NewCDTimer(105, 28374, nil, nil, nil, 2)
 local enrageTimer		= mod:NewBerserkTimer(480)
-local timerFearCD		= mod:NewCDTimer(20, 9250704, nil, nil, nil, 2)
 local timerHealingDebuff= mod:NewNextTimer(8, 25646, nil, nil, nil, 1)
 
 function mod:OnCombatStart(delay)
 	enrageTimer:Start(480 - delay)
 	timerEnrageCD:Start(30 - delay)
 	timerDecimate:Start(- delay)
-	timerFearCD:Start(-delay)
 	warnDecimateSoon:Schedule(100 - delay)
 	timerHealingDebuff:Start(10- delay)
 end
@@ -64,8 +62,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnDecimateNow:Show()
 		timerDecimate:Start()
 		warnDecimateSoon:Schedule(100)
-	elseif args.spellName == "Terrifying Roar" then	
-		timerFearCD:Start(20)
 	elseif args:IsSpellID(25646) then
 		timerHealingDebuff:Start()		
 	end

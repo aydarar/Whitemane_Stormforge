@@ -26,18 +26,27 @@ local timerLocustIn			= mod:NewCDTimer(60, 28785, nil, nil, nil, 6)
 local timerLocustFade		= mod:NewBuffActiveTimer(23, 28785, nil, nil, nil, 6)
 local timerImpale			= mod:NewCDTimer(20, 56090, nil, nil, nil, 3)
 
+mod:AddBoolOption("Distance2Boss", true, "misc") -- distance 2 boss status, 15 yd
+DBM:GetModLocalization("Anub'Rekhan"):SetOptionLocalization({Distance2Boss = "Show distance 2 boss (15 yd) - needs DBM-Distance2Boss"})
+
 mod:AddBoolOption("ArachnophobiaTimer", true, "timer", nil, nil, nil, "at1859")--Sad caveat that 10 and 25 man have own achievements and we have to show only 1 in GUI
 
 function mod:OnCombatStart(delay)
 	timerLocustIn:Start(60 - delay)
 	warningLocustSoon:Schedule(50 - delay)
 	timerImpale:Start(11-delay)
+	if self.Options.Distance2Boss and DBM.Distance2Boss then
+		DBM.Distance2Boss:Show(15)
+	end	
 end
 
 function mod:OnCombatEnd(wipe)
 	if not wipe and self.Options.ArachnophobiaTimer then
 		DBT:CreateBar(1200, L.ArachnophobiaTimer, "Interface\\Icons\\INV_Misc_MonsterSpiderCarapace_01")
 	end
+	if self.Options.Distance2Boss and DBM.Distance2Boss then
+		DBM.Distance2Boss:Hide()
+	end	
 end
 
 function mod:SPELL_CAST_START(args)

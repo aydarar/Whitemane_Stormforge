@@ -42,7 +42,7 @@ function mod:OnCombatStart(delay)
 	pullTime = GetTime() - delay
 	self.vb.doomCounter = 0
 	self.vb.sporeCounter = 0
-	if self:IsDifficulty("normal25", "heroic25") then
+	if self:IsDifficulty("normal25", "heroic25","heroic10") then
 		self.vb.sporeTimer = 15
 		timerDoom:Start(120 - delay, 1)
 	else

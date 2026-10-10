@@ -16,7 +16,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 28169",
 	"SPELL_SUMMON 28240",
 	"SPELL_DAMAGE 54363 28241",
-	"SPELL_CAST_SUCCESS 54367 28156 9250647 9250639",
+	"SPELL_CAST_SUCCESS 54367 28156 9250646 9250647 9250638 9250639 9250702 9250703",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"UNIT_DIED"
 )
@@ -38,7 +38,9 @@ local timerInjection		= mod:NewTargetTimer(10, 28169, nil, nil, nil, 3)
 local timerCloud			= mod:NewNextTimer(15, 28240, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerSlimeSprayCD		= mod:NewCDTimer(15, 54364, nil, nil, nil, 2)
 local enrageTimer			= mod:NewBerserkTimer(480)
+local timerVolatileBile		= mod:NewNextTimer(15, 9250702, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 
+mod:AddRangeFrameOption(22, 28169) -- Injection radar
 mod:AddSetIconOption("SetIconOnInjectionTarget", 28169, false, false, {1, 2, 3, 4})
 
 local mutateIcons = {}
@@ -78,6 +80,7 @@ function mod:OnCombatStart(delay)
 	warnSlimeSpraySoon:Schedule(5)
 	timerSlimeSprayCD:Start(10)
 	timerCloud:Start(15)
+	timerVolatileBile:Start(10)
 end
 
 function mod:OnCombatEnd()
@@ -94,6 +97,9 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnInjection:Show()
 			specWarnInjection:Play("runout")
 			yellInjection:Yell()
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Show(22)
+			end			
 		end
 		if self.Options.SetIconOnInjectionTarget then
 			table.insert(mutateIcons, args.destName)
@@ -109,6 +115,9 @@ function mod:SPELL_AURA_REMOVED(args)
 			removeIcon(self, args.destName)
 		end
 	end
+	if self.Options.RangeFrame then
+		DBM.RangeCheck:Hide()
+	end	
 end
 
 function mod:SPELL_SUMMON(args)
@@ -130,13 +139,15 @@ function mod:SPELL_DAMAGE(_,_,_, destGUID, _,_,spellId)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args.spellId == 9250639 then -- Slime Spray (Frostmourne custom): trigger from the cast, the emote stays as fallback
+	if args:IsSpellID(9250638, 9250639) then -- Slime Spray (Frostmourne custom): trigger from the cast, the emote stays as fallback
 		self:SlimeSpray()
-	elseif args:IsSpellID(54367, 28156) or (args.spellId == 9250647 and args:GetSrcCreatureID() == 16290) then -- Fallout Slime casts Disease Cloud when it spawns (9250647: Frostmourne custom, also used by trash slimes)
+	elseif args:IsSpellID(9250702, 9250703) then
+		timerVolatileBile:Start()
+	elseif args:IsSpellID(54367, 28156) or (args:IsSpellID(9250646, 9250647) and args:GetSrcCreatureID() == 16290) then -- Fallout Slime casts Disease Cloud when it spawns (9250647: Frostmourne custom, also used by trash slimes)
 		slimesAlive = slimesAlive + 1
 		if slimesAlive >= 3 and self.Options.SpecWarnManySlimes and self:AntiSpam(1, "Slime")then
 			self:ScheduleMethod(0.2, "ManySlimes")
-		end
+		end		
 	end
 end
 

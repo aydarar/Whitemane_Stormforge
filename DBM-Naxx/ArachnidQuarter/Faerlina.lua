@@ -36,9 +36,9 @@ mod.vb.RisenWorshipperIcons = 8
 mod.vb.enraged = false
 
 function mod:OnCombatStart(delay)
-	local firstEnrage = self:IsDifficulty("heroic25") and 74 or 60
+	local firstEnrage = self:IsDifficulty("heroic25","heroic10") and 74 or 60
 	timerEnrage:Start(firstEnrage - delay)	
-	warnEnrageSoon:Schedule(55 - delay)
+	warnEnrageSoon:Schedule(firstEnrage - 5 - delay)
 	timerPoisonVolleyCD:Start(12.6-delay) -- REVIEW! variance? (25man Lordaeron 2022/10/16) - 12.6
 	self.vb.RisenWorshipperIcons = 8
 	self.vb.enraged = false

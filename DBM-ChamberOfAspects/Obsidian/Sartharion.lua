@@ -49,6 +49,8 @@ local timerShadronPortal		= mod:NewTimer(132, "TimerShadronPortal", 11420)
 local timerVesperonPortal		= mod:NewTimer(168, "TimerVesperonPortal", 57988)
 --local timerTwighlightBlackout	= mod:NewNextTimer(15, 9250867, nil, nil, nil, 2)
 local yellTwighlightBlackout	= mod:NewYellMe(9250867,"Stack at me!")
+local timerBlackoutCD			= mod:NewNextTimer(50, 9250868, nil, nil, nil, 3)
+local timerBlackout				= mod:NewTargetTimer(15, 9250868, nil, nil, nil, 5)
 
 mod:AddBoolOption("AnnounceFails", true, "announce")
 
@@ -122,7 +124,8 @@ function mod:OnCombatStart(delay)
 	timerWall:Start(20-delay)
 	warnBreathSoon:Schedule(10-delay)
 	timerBreath:Start(15-delay)
-
+	timerBlackoutCD:Start(22-delay)
+	
 	twipe(lastvoids)
 	twipe(lastfire)
 	self.vb.TwiglightBlackoutIcon = 8 
@@ -184,6 +187,8 @@ function mod:SPELL_AURA_APPLIED(args)
 		SendChatMessage(L.FireWallOn:format(args.destName), "RAID")
 	end
 	if args:IsSpellID(9250867,9250868) then
+		timerBlackoutCD:Start()
+		timerBlackout:Start(args.destName)	
 		if self.Options.TwiglightBlackoutIcons then
 			self:SetIcon(args.destName, self.vb.TwiglightBlackoutIcon)
 		end
@@ -198,7 +203,7 @@ end
 function mod:SPELL_AURA_REMOVED(args)
 	if args:IsSpellID(9250867,9250868) then -- Twilight Blackout ended (dispelled or expired)
 		timerBlackout:Stop(args.destName)
-		if self.Options.SetIconOnBlackout then
+		if self.Options.TwiglightBlackoutIcons then
 			self:SetIcon(args.destName, 0)
 		end
 	end

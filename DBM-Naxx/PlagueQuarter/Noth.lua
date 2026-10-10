@@ -8,9 +8,8 @@ mod:SetEncounterID(1117)
 mod:RegisterCombat("combat_yell", L.Pull)
 
 mod:RegisterEvents(
-	"SPELL_CAST_SUCCESS 29213 54835 9250590 9250591 9250687 9250688",
-	"SPELL_AURA_APPLIED 29208 29209 29210 29211 9250590 9250591",
-	"SPELL_AURA_REMOVED 9250590 9250591",	
+	"SPELL_CAST_SUCCESS 29213 54835 9250590 9250591",
+	"SPELL_AURA_APPLIED 29208 29209 29210 29211 9250688 9250590 9250591",
 	"SPELL_CAST_START 54890 54891",
 	"CHAT_MSG_RAID_BOSS_EMOTE"
 )
@@ -56,9 +55,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 			specWarnDecurse:Show("raid")
 			specWarnDecurse:Play("helpdispel")
 		end
-	elseif args:IsSpellID(9250687,9250688) and args:IsPlayer() then
-		specWarnCurse:Show()
-		specWarnCurse:Play("runout")
 	end
 end
 
@@ -67,9 +63,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnBlink:Show()
 		timerBlink:Start()
 		warnBlinkSoon:Schedule(27)
-	elseif args:IsSpellID(9250590,9250591) and args:IsPlayer() then
+	elseif args:IsSpellID(9250590, 9250591) and args:IsPlayer() then
 		specWarnCurse:Show()
-		specWarnCurse:Play("scatter")
+		specWarnCurse:Play("runout")
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:Show(8)
 		end

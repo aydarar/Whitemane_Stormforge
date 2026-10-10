@@ -7,7 +7,7 @@ mod:SetCreatureID(15936)
 mod:RegisterCombat("combat_yell", L.Pull)
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_SUCCESS 9250593"
+	"SPELL_CAST_SUCCESS 9250592 9250593"
 )
 
 local warnTeleportSoon			= mod:NewAnnounce("WarningTeleportSoon", 2, 46573)
@@ -56,7 +56,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args.spellId == 9250593 and self.vb.phase == 1 then -- Decrepit Fever
+	if args:IsSpellID(9250592,9250593) and self.vb.phase == 1 then -- Decrepit Fever
 		timerFeverCD:Start()
 	end
 end

@@ -13,7 +13,7 @@ mod:RegisterEvents(
 )
 
 mod:RegisterEventsInCombat(
-	"SPELL_AURA_APPLIED 60936 57407 9250865",
+	"SPELL_AURA_APPLIED 60936 57407 9250864 9250865",
 	"SPELL_CAST_START 56505 9250851 9250852",
 	"SPELL_CAST_SUCCESS 57430",
 	"CHAT_MSG_RAID_BOSS_EMOTE"
@@ -74,7 +74,7 @@ local feedbackIcon = 1
 mod:AddSetIconOption("SparkIcons", 56140, true, 5, {8})
 mod.vb.SparkIcon = 8
 
-mod:AddRangeFrameOption(12, 9250865)
+mod:AddRangeFrameOption(20, 9250865)
 
 local tableBuild = false
 local guids = {}
@@ -108,7 +108,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args.spellId == 9250865 then -- Arcane Feedback
+	if args:IsSpellID(9250864, 9250865) then -- Arcane Feedback
 		timerFeedback:Start(args.destName)
 	elseif args:IsSpellID(60936, 57407) then
 		DBM:Debug("SURGE" .. guids[args.destGUID], 2)
@@ -189,7 +189,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg,sourceName)
 			specWarnFeedbackYou:Play("targetyou")
 			yellFeedback:Yell()
 			if self.Options.RangeFrame then
-				DBM.RangeCheck:Show(12)
+				DBM.RangeCheck:Show(20)
 			end					
 		end
 	elseif msg == L.EmoteSpark or msg:find(L.EmoteSpark) then
@@ -204,7 +204,7 @@ function mod:OnSync(event, arg)
 	if not self:IsInCombat() then return end
 	if event == "Spark" then
 		warnSummonPowerSpark:Show()
-		self:ScanForMobs(30084, 20, self.vb.SparkIcon , 1, nil, 8, "SparkIcons")
+		self:ScanForMobs(30084, 30, self.vb.SparkIcon , 1, nil, 8, "SparkIcons")
 		local t = GetTime()
 		if t+21 >= nextVortex then
 			timerSummonPowerSpark:Start(nextVortex+33-t)

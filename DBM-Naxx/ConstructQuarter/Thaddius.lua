@@ -9,8 +9,8 @@ mod:SetEncounterID(1120)
 mod:RegisterCombat("combat_yell", L.Yell)
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 28089",
-	"SPELL_CAST_SUCCESS 9250651",	
+	"SPELL_CAST_START 28089 9250710",
+	"SPELL_CAST_SUCCESS 9250650 9250651",	
 	"CHAT_MSG_MONSTER_YELL",
 	"UNIT_AURA player",
 	"UNIT_DIED"
@@ -31,6 +31,7 @@ local timerShiftCast		= mod:NewCastTimer(3, 28089, nil, nil, nil, 2)
 local timerThrow			= mod:NewNextTimer(28, 28338, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerChainLightningCD	= mod:NewCDTimer(15, 9250651, nil, nil, nil, 3) -- Frostmourne custom, log 2026-10-06: every 15.0-15.1 in phase 2 (one 24s gap during Tesla Overload)
 local timerResetMiniBoss	= mod:NewTimer(5, "Mini boss resets", 20608)
+local timerTeslaOverload	= mod:NewCastTimer(3, 9250710, nil, nil, nil, 2)
 
 if not DBM.Options.GroupOptionsBySpell then
 	mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
@@ -74,6 +75,8 @@ do
 			timerShiftCast:Start()
 			warnShiftCasting:Show()
 			lastShift = GetTime()
+		elseif args.spellId == 9250710 then
+			timerTeslaOverload:Start()
 		end
 	end
 
@@ -121,7 +124,7 @@ do
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args.spellId == 9250651 then -- Chain Lightning (Frostmourne custom)
+	if args:IsSpellID(9250650, 9250651) then -- Chain Lightning (Frostmourne custom)
 		timerChainLightningCD:Start()
 	end
 end

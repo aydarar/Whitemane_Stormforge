@@ -68,7 +68,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if args.destName == UnitName("player") then
 			yellWebWrap:Yell()
 		elseif not DBM:UnitDebuff("player", args.spellName) and self:AntiSpam(3, 2) then
-			specWarnWebWrap:Play("targetchange")
+			specWarnWebWrap:Play("killwebs")
 		end
 	elseif args:IsSpellID(29484, 54125,9250573,9250574) and self:AntiSpam(3, 3) then -- Web Spray
 		warnWebSprayNow:Show()

@@ -13,7 +13,7 @@ mod:RegisterCombat("combat", 16063, 16064, 16065, 30549)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 28884 57467 9250623",
-	"SPELL_CAST_SUCCESS 28832 28833 28834 28835 28883 53638 57466 32455 9250631 9250637 28863 57463",
+	"SPELL_CAST_SUCCESS 28832 28833 28834 28835 28883 53638 57466 32455 28863 57463 9250630 9250631 9250636 9250637",
 	"SPELL_AURA_APPLIED 29061",
 	"SPELL_AURA_REMOVED 29061",
 	"SPELL_AURA_APPLIED_DOSE 28832 28833 28834 28835",
@@ -77,7 +77,7 @@ function mod:OnCombatStart()
 	timerBaronMark:Start(32)
 	timerThaneMark:Start(32)
 	warnMarkSoon:Schedule(27)
-	if self:IsDifficulty("heroic25") then -- Frostmourne raid reports as heroic25
+	if self:IsDifficulty("heroic25","heroic10") then -- Frostmourne raid reports as heroic25
 		timerMeteorCD:Start(20) -- log: 20.2 / 21.0
 		timerHolyWrathCD:Start(24) -- log: 23.9
 		timerUnholyShadowCD:Start(19)
@@ -119,7 +119,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 			timerThaneMark:Start()
 		end
 		warnMarkSoon:Schedule(9)
-	elseif spellId == 9250637 then -- Unholy Shadow (Frostmourne custom)
+	elseif args:IsSpellID(9250636,9250637) then -- Unholy Shadow (Frostmourne custom)
 		timerUnholyShadowCD:Start()
 	elseif args:IsSpellID(28863, 57463) then -- Void Zone
 		timerVoidZoneCD:Start()
@@ -130,9 +130,9 @@ function mod:SPELL_CAST_SUCCESS(args)
 		elseif self:CheckNearby(12, args.destName) then
 			warnVoidZone:Show(args.destName)
 		end
-	elseif args:IsSpellID(28883, 53638, 57466, 32455, 9250631) then -- Holy Wrath (9250631: Frostmourne custom)
+	elseif args:IsSpellID(28883, 53638, 57466, 32455, 9250630,9250631) then -- Holy Wrath (9250631: Frostmourne custom)
 		warnHolyWrath:Show(args.destName)
-		if self:IsDifficulty("heroic25") then
+		if self:IsDifficulty("heroic25","heroic10") then
 			timerHolyWrathCD:Start(15.3) -- Frostmourne log 2026-10-06 (8 casts): 15.2-16.7 between casts
 		else
 			timerHolyWrathCD:Start()
